@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?> 
+<migration>
+	<up>
+		<step>
+		<![CDATA[
+CREATE NONCLUSTERED INDEX IX_StatusLog_leveranceId_status ON dbo.StatusLog
+	(
+	LeveranceID DESC,
+	Status
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+	]]>
+		</step>
+		<step>
+		<![CDATA[
+CREATE NONCLUSTERED INDEX IX_Opkrævning_leveranceId ON dbo.Opkrævning
+	(
+	Id,
+	LeveranceID DESC
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+	]]>
+		</step>
+		<step>
+		<![CDATA[
+		
+CREATE NONCLUSTERED INDEX IX_Betaling_kreditorId_bilagsId_lbnr ON dbo.Betaling
+	(
+	KreditorID,
+	BilagsID DESC,
+	lbnr
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+	]]>
+		</step>
+		<step>
+		<![CDATA[
+if not exists (select * from sysindexes where name = 'IX_StatusLog_leveranceId_status')
+	RAISERROR ('The index should have been created', 16, 1)
+		]]>
+		</step>
+		<step>
+		<![CDATA[
+if not exists (select * from sysindexes where name = 'IX_Opkrævning_leveranceId')
+	RAISERROR ('The index should have been created', 16, 1)
+		]]>
+		</step>
+		<step>
+		<![CDATA[
+if not exists (select * from sysindexes where name = 'IX_Betaling_kreditorId_bilagsId_lbnr')
+	RAISERROR ('The index should have been created', 16, 1)
+		]]>
+		</step>
+	</up>
+	
+	<down>
+		<step>
+		<![CDATA[
+drop index IX_StatusLog_leveranceId_status on StatusLog
+drop index IX_Opkrævning_leveranceId on Opkrævning
+drop index IX_Betaling_kreditorId_bilagsId_lbnr on betaling
+		]]>
+		</step>
+		<step>
+		<![CDATA[
+if exists (select * from sysindexes where name in ('IX_StatusLog_leveranceId_status', 'IX_Opkrævning_leveranceId', 'IX_Betaling_kreditorId_bilagsId_lbnr'))
+	RAISERROR ('The index should have been removed', 16, 1)
+		]]>
+		</step>
+	</down>
+</migration>
+	 
